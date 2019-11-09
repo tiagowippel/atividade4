@@ -5,214 +5,68 @@ import ReactDOM from 'react-dom';
 
 import { Card, Button, Input, Table } from 'antd';
 
-import ApolloClient from 'apollo-boost';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
-import gql from 'graphql-tag';
+import Cadastro from './Cadastro';
+import Login from './Login';
+import Testes from './Testes';
 
-const client = new ApolloClient({ uri: '/graphql' });
+import { Layout, Menu, Breadcrumb } from 'antd';
 
-import { observer, inject } from 'mobx-react';
-import { observable, action, toJS, autorun, extendObservable } from 'mobx';
+const { Header, Content, Footer } = Layout;
 
-@observer
 class App extends React.Component {
     constructor(props) {
         super(props);
     }
 
-    @observable dadosForm = {
-        _id: '',
-        username: '',
-        name: '',
-    };
-
-    @observable dadosLista = [];
-
-    botaoatu = e => {
-        client
-            .query({
-                query: gql`
-                    query {
-                        getUsers
-                    }
-                `,
-                fetchPolicy: 'no-cache',
-            })
-            .then(res => {
-                console.log(res.data.getUsers);
-                this.dadosLista = res.data.getUsers;
-            })
-            .catch(err => {
-                console.log(`err->${err}`);
-            });
-    };
-
     render() {
         return (
-            <div
-                style={{
-                    border: '1px solid red',
-                    height: '100vh',
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <Card title="Usuários" style={{ flex: 1, width1: 300 }}>
-                    <div>
-                        <Input
-                            value={this.dadosForm.username}
-                            onChange={e => {
-                                this.dadosForm.username = e.target.value;
-                            }}
-                            placeholder="username"
-                        ></Input>
-                        <Input
-                            value={this.dadosForm.name}
-                            onChange={e => {
-                                this.dadosForm.name = e.target.value;
-                            }}
-                            placeholder="name"
-                        ></Input>
-                        <Button
-                            onClick={e => {
-                                console.log(toJS(this.dadosForm));
-                                client
-                                    .mutate({
-                                        mutation: gql`
-                                            mutation($input: JSON!) {
-                                                saveUser(input: $input)
-                                            }
-                                        `,
-                                        variables: {
-                                            input: toJS(this.dadosForm),
-                                        },
-                                    })
-                                    .then(res => {
-                                        console.log(res.data.saveUser);
-                                        this.dadosForm = {
-                                            _id: '',
-                                            username: '',
-                                            name: '',
-                                        };
-                                    })
-                                    .catch(err => {
-                                        console.log(`err->${err}`);
-                                    });
-                            }}
-                        >
-                            gravar
-                        </Button>
-                    </div>
-                    <div>
-                        <Button onClick={this.botaoatu}>atualizar</Button>
-                        <Table
-                            columns={[
-                                {
-                                    dataIndex: 'username',
-                                    title: 'username',
-                                },
-                                {
-                                    dataIndex: 'name',
-                                    title: 'name',
-                                },
-                                {
-                                    render: record => {
-                                        //return <h1>{record._id}</h1>;
-                                        return (
-                                            <Button
-                                                onClick={e => {
-                                                    client
-                                                        .query({
-                                                            query: gql`
-                                                                query($id: String!) {
-                                                                    getUser(id: $id)
-                                                                }
-                                                            `,
-                                                            fetchPolicy: 'no-cache',
-                                                            variables: {
-                                                                id: record._id,
-                                                            },
-                                                        })
-                                                        .then(res => {
-                                                            console.log(res.data.getUser);
-                                                            this.dadosForm = res.data.getUser;
-                                                        })
-                                                        .catch(err => {
-                                                            console.log(`err->${err}`);
-                                                        });
-                                                }}
-                                            >
-                                                editar
-                                            </Button>
-                                        );
-                                    },
-                                },
-                            ]}
-                            dataSource={this.dadosLista}
-                            rowKey="_id"
-                        ></Table>
-                    </div>
-                </Card>
-                <Card title="Teste" style={{ width1: 300 }}>
-                    <Button
-                        type="primary"
-                        size="large"
-                        onClick={e => {
-                            // return client
-                            //     .query({
-                            //         query: gql`
-                            //             query {
-                            //                 getPosts
-                            //             }
-                            //         `,
-                            //         fetchPolicy: 'no-cache',
-                            //     })
-                            //     .then(res => {
-                            //         console.log(res.data.getPosts);
-                            //     })
-                            //     .catch(err => {
-                            //         console.log(`err->${err}`);
-                            //     });
-
-                            client
-                                .query({
-                                    query: gql`
-                                        query {
-                                            teste
-                                        }
-                                    `,
-                                    fetchPolicy: 'no-cache',
-                                })
-                                .then(res => {
-                                    console.log(res.data.teste);
-                                })
-                                .catch(err => {
-                                    console.log(`err->${err}`);
-                                });
-
-                            client
-                                .mutate({
-                                    mutation: gql`
-                                        mutation($input: String!) {
-                                            teste(input: $input)
-                                        }
-                                    `,
-                                    variables: {
-                                        input: '123',
-                                    },
-                                })
-                                .then(res => {
-                                    console.log(res.data.teste);
-                                })
-                                .catch(err => {
-                                    console.log(`err->${err}`);
-                                });
-                        }}
-                    >
-                        teste
-                    </Button>
-                </Card>
-            </div>
+            <Router>
+                <Layout>
+                    <Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
+                        {/* <div className="logo" /> */}
+                        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']} style={{ lineHeight: '64px' }}>
+                            <Menu.Item key="1">
+                                <Link to="/">Home</Link>
+                            </Menu.Item>
+                            <Menu.Item key="2">
+                                <Link to="/cadastro">Cadastro</Link>
+                            </Menu.Item>
+                            <Menu.Item key="3">
+                                <Link to="/login">Login</Link>
+                            </Menu.Item>
+                            <Menu.Item key="4">
+                                <Link to="/testes">Testes</Link>
+                            </Menu.Item>
+                        </Menu>
+                    </Header>
+                    <Content style={{ padding: '0 50px', marginTop: 64 }}>
+                        <Breadcrumb style={{ margin: '16px 0' }}>
+                            {/* <Breadcrumb.Item>Home</Breadcrumb.Item>
+                        <Breadcrumb.Item>List</Breadcrumb.Item>
+                        <Breadcrumb.Item>App</Breadcrumb.Item> */}
+                        </Breadcrumb>
+                        <div style={{ background: '#fff', padding: 24, minHeight: 380 }}>
+                            <Switch>
+                                <Route path="/cadastro">
+                                    <Cadastro />
+                                </Route>
+                                <Route path="/login">
+                                    <Login />
+                                </Route>
+                                <Route path="/testes">
+                                    <Testes />
+                                </Route>
+                                <Route path="/">
+                                    <div>Home</div>
+                                </Route>
+                            </Switch>
+                        </div>
+                    </Content>
+                    <Footer style={{ textAlign: 'center' }}>Atividade 4</Footer>
+                </Layout>
+            </Router>
         );
     }
 }

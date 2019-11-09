@@ -71,14 +71,11 @@ const typeDefs = `
     scalar JSON
 
     type Query {
-        
         getUsers: JSON
         getUser(id: String!): JSON
-
     }
 
     type Mutation {
-
         saveUser(input: JSON!): JSON
     }
 
