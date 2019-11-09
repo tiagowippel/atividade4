@@ -22,7 +22,7 @@ app.use(loggingMiddleware);
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const graphql = require('./server/graphql')();
+const graphql = require('./backend/graphql')();
 
 const { AuthenticationError } = require('apollo-server');
 
@@ -34,7 +34,7 @@ const server = new ApolloServer({
 });
 server.applyMiddleware({ app });
 
-const api = require('./server/api');
+const api = require('./backend/api');
 app.use('/api', api);
 
 app.use('/', express.static(path.join(__dirname, 'public')));

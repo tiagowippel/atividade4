@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: ['./src/index.jsx'],
+    entry: ['./frontend/index.jsx'],
     output: {
         path: path.resolve(__dirname, 'public'),
         filename: 'bundle.js',

@@ -71,20 +71,15 @@ const typeDefs = `
     scalar JSON
 
     type Query {
-        #teste: JSON
         
         getUsers: JSON
         getUser(id: String!): JSON
 
-        getPosts: JSON
-        #getPost: JSON
     }
 
     type Mutation {
-        #teste(input: String!): JSON
 
         saveUser(input: JSON!): JSON
-        #savePost(input: JSON!): JSON
     }
 
     schema {
@@ -104,9 +99,9 @@ const resolvers = {
         //         });
         //     });
         // },
-        getPosts(obj, args, context, info) {
-            return Blog.find();
-        },
+        // getPosts(obj, args, context, info) {
+        //     return Blog.find();
+        // },
         getUsers(obj, args, context, info) {
             return User.find();
         },
@@ -127,12 +122,13 @@ const resolvers = {
                 const user = new User(args.input);
                 return user.save();
             } else {
-                return User.findById(args.input._id).then(user => {
-                    //user.username = args.username;
-                    //user.name = args.name;
-                    Object.assign(user, args.input);
-                    return user.save();
-                });
+                return User.update({ _id: args.input._id }, args.input);
+                //return User.findById(args.input._id).then(user => {
+                //user.username = args.username;
+                //user.name = args.name;
+                // Object.assign(user, args.input);
+                // return user.save();
+                //});
             }
         },
     },

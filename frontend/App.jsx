@@ -12,7 +12,6 @@ import gql from 'graphql-tag';
 const client = new ApolloClient({ uri: '/graphql' });
 
 import { observer, inject } from 'mobx-react';
-
 import { observable, action, toJS, autorun, extendObservable } from 'mobx';
 
 @observer
@@ -28,6 +27,25 @@ class App extends React.Component {
     };
 
     @observable dadosLista = [];
+
+    botaoatu = e => {
+        client
+            .query({
+                query: gql`
+                    query {
+                        getUsers
+                    }
+                `,
+                fetchPolicy: 'no-cache',
+            })
+            .then(res => {
+                console.log(res.data.getUsers);
+                this.dadosLista = res.data.getUsers;
+            })
+            .catch(err => {
+                console.log(`err->${err}`);
+            });
+    };
 
     render() {
         return (
@@ -86,28 +104,7 @@ class App extends React.Component {
                         </Button>
                     </div>
                     <div>
-                        <Button
-                            onClick={e => {
-                                client
-                                    .query({
-                                        query: gql`
-                                            query {
-                                                getUsers
-                                            }
-                                        `,
-                                        fetchPolicy: 'no-cache',
-                                    })
-                                    .then(res => {
-                                        console.log(res.data.getUsers);
-                                        this.dadosLista = res.data.getUsers;
-                                    })
-                                    .catch(err => {
-                                        console.log(`err->${err}`);
-                                    });
-                            }}
-                        >
-                            atualizar
-                        </Button>
+                        <Button onClick={this.botaoatu}>atualizar</Button>
                         <Table
                             columns={[
                                 {
