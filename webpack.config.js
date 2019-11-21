@@ -38,11 +38,12 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: 'styles.css',
         }),
-        new webpack.HotModuleReplacementPlugin(),
+        //new webpack.HotModuleReplacementPlugin(),
     ],
     devServer: {
         contentBase: path.join(__dirname, 'public'),
         hot: true,
+        //inline: true,
         port: 3333,
         historyApiFallback: true,
         proxy: {

@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const graphql = require('./backend/graphql')();
 
-const { AuthenticationError } = require('apollo-server');
+//const { AuthenticationError } = require('apollo-server');
 
 const { ApolloServer, gql } = require('apollo-server-express');
 const server = new ApolloServer({

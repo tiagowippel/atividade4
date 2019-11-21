@@ -4,8 +4,7 @@
     "prettier.singleQuote": true,
     "prettier.printWidth": 200,
     "prettier.trailingComma": "es5",
-    "editor.cursorStyle": "line",
-    "editor.cursorWidth": 5,
-    "editor.cursorBlinking": "solid",
-    "editor.renderWhitespace": "all"
+    "workbench.colorCustomizations": {
+        "tab.unfocusedActiveBorder": "#fff0"
+    }
 }
