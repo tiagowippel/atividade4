@@ -71,12 +71,15 @@ const typeDefs = `
     scalar JSON
 
     type Query {
-        getUsers: JSON
-        getUser(id: String!): JSON
+        teste: JSON
+        #getUsers: JSON
+        #getUser(id: String!): JSON
     }
 
     type Mutation {
+        #saveUser(input: JSON!): JSON
         saveUser(input: JSON!): JSON
+        login(input: JSON!): JSON
     }
 
     schema {
@@ -89,22 +92,22 @@ const typeDefs = `
 const resolvers = {
     JSON: GraphQLJSON,
     Query: {
-        // teste(obj, args, context, info) {
-        //     return new Promise((resolve, reject) => {
-        //         resolve({
-        //             teste: [1, 2, 3],
-        //         });
-        //     });
-        // },
+        teste(obj, args, context, info) {
+            return new Promise((resolve, reject) => {
+                resolve({
+                    teste: [1, 2, 3],
+                });
+            });
+        },
         // getPosts(obj, args, context, info) {
         //     return Blog.find();
         // },
-        getUsers(obj, args, context, info) {
-            return User.find();
-        },
-        getUser(obj, args, context, info) {
-            return User.findById(args.id);
-        },
+        // getUsers(obj, args, context, info) {
+        //     return User.find();
+        // },
+        // getUser(obj, args, context, info) {
+        //     return User.findById(args.id);
+        // },
     },
     Mutation: {
         // teste(obj, args, context, info) {
@@ -112,21 +115,64 @@ const resolvers = {
         //         resolve({ resultado: args.input * 2 });
         //     });
         // },
+        // saveUser(obj, args, context, info) {
+        //     //const { _id, ...resto } = args.input;
+        //     if (args.input._id === '') {
+        //         delete args.input._id;
+        //         const user = new User(args.input);
+        //         return user.save();
+        //     } else {
+        //         return User.update({ _id: args.input._id }, args.input);
+        //         //return User.findById(args.input._id).then(user => {
+        //         //user.username = args.username;
+        //         //user.name = args.name;
+        //         // Object.assign(user, args.input);
+        //         // return user.save();
+        //         //});
+        //     }
+        // },
         saveUser(obj, args, context, info) {
-            //const { _id, ...resto } = args.input;
-            if (args.input._id === '') {
-                delete args.input._id;
-                const user = new User(args.input);
-                return user.save();
-            } else {
-                return User.update({ _id: args.input._id }, args.input);
-                //return User.findById(args.input._id).then(user => {
-                //user.username = args.username;
-                //user.name = args.name;
-                // Object.assign(user, args.input);
-                // return user.save();
-                //});
+            //console.log(args);
+
+            const { username, name, password } = args.input;
+
+            if (username === '' || name === '' || password === '') {
+                throw new Error('Erros no formulário.');
             }
+
+            return User.findOne({ username }).then(user => {
+                if (user !== null) {
+                    throw new Error('Usuário já existe.');
+                }
+                return User.create({
+                    username,
+                    name,
+                    password,
+                }).then(user => {
+                    return {
+                        ok: true,
+                    };
+                });
+            });
+        },
+        login(obj, args, context, info) {
+            //console.log(args);
+
+            const { username, password } = args.input;
+
+            if (username === '' || password === '') {
+                throw new Error('Erros no formulário.');
+            }
+
+            return User.findOne({ username }, '', { lean: true }).then(user => {
+                if (user === null) {
+                    throw new Error('Usuário não encontrado.');
+                }
+                if (user.password !== password) {
+                    throw new Error('Senha incorreta.');
+                }
+                return user;
+            });
         },
     },
 };

@@ -1,0 +1,8 @@
+TODO: validações no frontend
+
+TODO: validações online (onblur)
+
+TODO: login pela api e nao por graphql
+
+TODO: login token e proteger api graphql
+

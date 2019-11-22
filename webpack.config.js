@@ -2,7 +2,7 @@ const path = require('path');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const webpack = require('webpack');
+//const webpack = require('webpack');
 
 module.exports = {
     entry: ['./frontend/index.jsx'],

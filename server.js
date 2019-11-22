@@ -5,7 +5,7 @@ const express = require('express');
 const path = require('path');
 //const sslRedirect = require('heroku-ssl-redirect');
 
-const colors = require('colors');
+//const colors = require('colors');
 
 const app = express();
 

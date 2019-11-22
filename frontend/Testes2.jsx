@@ -16,7 +16,7 @@ class This extends React.Component {
     };
 
     clickButton = e => {
-        console.log(this.state);
+        //console.log(this.state);
     };
 
     changeInput = field => e => {
