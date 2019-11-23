@@ -496,9 +496,9 @@ class SubSecao extends React.Component {
                         //border: '1px red solid',
                     }}
                 >
-                    {this.props.dados.map(item => {
+                    {this.props.dados.map((item, k) => {
                         return (
-                            <div>
+                            <div key={k}>
                                 <Row>
                                     <Col xs={24} sm={24}>
                                         <Input placeholder="Título" value={item.titulo} onChange={e => (item.titulo = e.target.value)}></Input>

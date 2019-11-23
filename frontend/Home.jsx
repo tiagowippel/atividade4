@@ -5,6 +5,9 @@ import React from 'react';
 
 import { Card, Row, Col, Form, Input, Button, message, Table, Modal, Divider, Tree } from 'antd';
 
+import { Collapse } from 'antd';
+const { Panel } = Collapse;
+
 import { observer, inject } from 'mobx-react';
 import { observable, action, toJS, autorun, extendObservable } from 'mobx';
 
@@ -46,6 +49,29 @@ class This extends React.Component {
             });
     }
 
+    renderPosts(arr) {
+        return arr.map((item, k, arr) => {
+            //return <li key={k}>{item.titulo}</li>;
+            return (
+                <Collapse key={k} defaultActiveKey1={['0']}>
+                    <Panel header={item.titulo}>
+                        <p>{item.conteudo}</p>
+                        {this.renderPosts(item.subsecao)}
+                        {/* <Collapse>
+                                {item.subsecao.map((item2, k2) => {
+                                    return (
+                                        <Panel header={item2.titulo} key={k}>
+                                            <p>{item2.conteudo}</p>
+                                        </Panel>
+                                    );
+                                })}
+                            </Collapse> */}
+                    </Panel>
+                </Collapse>
+            );
+        });
+    }
+
     render() {
         const { user } = this.props.appStore;
         return (
@@ -66,10 +92,10 @@ class This extends React.Component {
                                 title: 'Descrição',
                                 dataIndex: 'descricao',
                             },
-                            {
-                                title: 'Usuário',
-                                dataIndex: 'usuario',
-                            },
+                            // {
+                            //     title: 'Usuário',
+                            //     dataIndex: 'usuario',
+                            // },
                             {
                                 title: 'Data/Hora Último Post',
                                 dataIndex: 'dataHora',
@@ -127,15 +153,7 @@ class This extends React.Component {
                         footer={null}
                     >
                         {/* <div>{this.dadosBlog && this.dadosBlog.descricao}</div> */}
-                        <div>
-                            {this.dadosBlog && (
-                                <ul>
-                                    {this.dadosBlog.posts.map((item, k) => {
-                                        return <li key={k}>{item.titulo}</li>;
-                                    })}
-                                </ul>
-                            )}
-                        </div>
+                        <div>{this.dadosBlog && <div>{this.renderPosts(this.dadosBlog.posts)}</div>}</div>
                     </Modal>
                 </div>
             </div>
