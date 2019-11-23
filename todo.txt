@@ -6,3 +6,4 @@ TODO: login pela api e nao por graphql
 
 TODO: login token e proteger api graphql
 
+TODO: paginacao, filtro, ordenacao

@@ -34,7 +34,7 @@ class This extends React.Component {
     };
 
     loginClick = e => {
-        console.log(toJS(this.dadosForm));
+        //console.log(toJS(this.dadosForm));
         client
             .mutate({
                 mutation: gql`
@@ -47,11 +47,11 @@ class This extends React.Component {
                 },
             })
             .then(res => {
-                console.log(res.data.login);
-                const { name, id } = res.data.login;
+                //console.log(res.data.login);
+                const { name, _id } = res.data.login;
                 message.success('Usuário logado com sucesso.');
-                store.set('user', { id, name });
-                this.props.appStore.user = { id, name };
+                store.set('user', { _id, name });
+                this.props.appStore.user = { _id, name };
                 this.props.history.push('/');
                 //this.dadosForm = this.initial;
             })

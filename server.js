@@ -30,7 +30,12 @@ const { ApolloServer, gql } = require('apollo-server-express');
 const server = new ApolloServer({
     typeDefs: graphql.typeDefs,
     resolvers: graphql.resolvers,
-    //context: ({ req }) => {},
+    context: ({ req }) => {
+        //console.log(req.headers);
+        return {
+            idUser: req.headers.iduser,
+        };
+    },
 });
 server.applyMiddleware({ app });
 

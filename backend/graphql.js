@@ -6,14 +6,15 @@ mongoose.connect('mongodb://localhost/atividade4', { useNewUrlParser: true });
 
 const UserSchema = mongoose.Schema({ username: String, name: String, password: String });
 
-const SecaoSchema = mongoose.Schema({ texto: String, subsecao: [this] });
+const SecaoSchema = mongoose.Schema({ titulo: String, conteudo: String, subsecao: [this] });
 
 const PostSchema = mongoose.Schema({
-    titulo: String,
     dataHora: { type: Date, default: Date.now },
-    conteudo: [SecaoSchema],
+    titulo: String,
+    conteudo: String,
+    subsecao: [SecaoSchema],
 });
-const BlogSchema = mongoose.Schema({ iDuser: String, descricao: String, posts: [PostSchema] });
+const BlogSchema = mongoose.Schema({ idUser: String, descricao: String, posts: [PostSchema] });
 
 const User = mongoose.model('User', UserSchema);
 const Blog = mongoose.model('Blog', BlogSchema);
@@ -71,14 +72,19 @@ const typeDefs = `
     scalar JSON
 
     type Query {
-        teste: JSON
+        #teste: JSON
         #getUsers: JSON
         #getUser(id: String!): JSON
+        getBlogs: JSON
+        getBlogsHome: JSON
+        getBlog(id: String!): JSON
     }
 
     type Mutation {
         #saveUser(input: JSON!): JSON
         saveUser(input: JSON!): JSON
+        saveBlog(input: JSON!): JSON
+        savePost(input: JSON!): JSON
         login(input: JSON!): JSON
     }
 
@@ -92,13 +98,13 @@ const typeDefs = `
 const resolvers = {
     JSON: GraphQLJSON,
     Query: {
-        teste(obj, args, context, info) {
-            return new Promise((resolve, reject) => {
-                resolve({
-                    teste: [1, 2, 3],
-                });
-            });
-        },
+        // teste(obj, args, context, info) {
+        //     return new Promise((resolve, reject) => {
+        //         resolve({
+        //             teste: [1, 2, 3],
+        //         });
+        //     });
+        // },
         // getPosts(obj, args, context, info) {
         //     return Blog.find();
         // },
@@ -108,6 +114,52 @@ const resolvers = {
         // getUser(obj, args, context, info) {
         //     return User.findById(args.id);
         // },
+        getBlogs(obj, args, context, info) {
+            return Blog.find(
+                {
+                    idUser: context.idUser,
+                },
+                null,
+                { lean: true }
+            ).then(blogs => {
+                return blogs;
+            });
+        },
+        getBlogsHome(obj, args, context, info) {
+            return Blog.aggregate([
+                // {
+                //     $lookup: {
+                //         from: 'users',
+                //         localField: 'idUser',
+                //         foreignField: '_id',
+                //         as: 'usuario',
+                //     },
+                // },
+                {
+                    $unwind: {
+                        path: '$posts',
+                        preserveNullAndEmptyArrays: true,
+                    },
+                },
+                {
+                    $group: {
+                        _id: '$_id',
+                        descricao: { $first: '$descricao' },
+                        dataHora: { $first: '$posts.dataHora' },
+                        usuario: { $first: '$usuario' },
+                    },
+                },
+                {
+                    $sort: { dataHora: -1 },
+                },
+            ]);
+            // .then(lll => {
+            //     console.log(lll);
+            // });
+        },
+        getBlog(obj, args, context, info) {
+            return Blog.findById(args.id);
+        },
     },
     Mutation: {
         // teste(obj, args, context, info) {
@@ -155,6 +207,46 @@ const resolvers = {
                 });
             });
         },
+        saveBlog(obj, args, context, info) {
+            //console.log(args);
+
+            const { _id, descricao } = args.input;
+
+            if (descricao === '') {
+                throw new Error('Erros no formulário.');
+            }
+
+            return _id === null
+                ? Blog.create({
+                      idUser: context.idUser,
+                      descricao,
+                  })
+                : Blog.updateOne(
+                      { _id },
+                      {
+                          descricao,
+                      }
+                  ).then(blog => {
+                      return {
+                          ok: true,
+                      };
+                  });
+        },
+        savePost(obj, args, context, info) {
+            //console.log(args);
+
+            const { _id, ...resto } = args.input;
+
+            // if (titulo === '') {
+            //     throw new Error('Erros no formulário.');
+            // }
+
+            return Blog.updateOne({ _id }, resto).then(blog => {
+                return {
+                    ok: true,
+                };
+            });
+        },
         login(obj, args, context, info) {
             //console.log(args);
 
@@ -164,7 +256,7 @@ const resolvers = {
                 throw new Error('Erros no formulário.');
             }
 
-            return User.findOne({ username }, '', { lean: true }).then(user => {
+            return User.findOne({ username }, null, { lean: true }).then(user => {
                 if (user === null) {
                     throw new Error('Usuário não encontrado.');
                 }
