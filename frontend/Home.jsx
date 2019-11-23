@@ -92,10 +92,10 @@ class This extends React.Component {
                                 title: 'Descrição',
                                 dataIndex: 'descricao',
                             },
-                            // {
-                            //     title: 'Usuário',
-                            //     dataIndex: 'usuario',
-                            // },
+                            {
+                                title: 'Usuário',
+                                dataIndex: 'usuario.name',
+                            },
                             {
                                 title: 'Data/Hora Último Post',
                                 dataIndex: 'dataHora',

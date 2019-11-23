@@ -14,7 +14,7 @@ const PostSchema = mongoose.Schema({
     conteudo: String,
     subsecao: [SecaoSchema],
 });
-const BlogSchema = mongoose.Schema({ idUser: String, descricao: String, posts: [PostSchema] });
+const BlogSchema = mongoose.Schema({ idUser: mongoose.Schema.Types.ObjectId, descricao: String, posts: [PostSchema] });
 
 const User = mongoose.model('User', UserSchema);
 const Blog = mongoose.model('Blog', BlogSchema);
@@ -63,6 +63,42 @@ const Secao = mongoose.model('Secao', SecaoSchema);
 //     blog1.save().then(result => {
 //         console.log(JSON.stringify(result));
 //     });
+// });
+
+// Blog.aggregate([
+//     {
+//         $lookup: {
+//             from: 'users',
+//             localField: 'idUser',
+//             foreignField: '_id',
+//             as: 'usuario',
+//         },
+//     },
+//     {
+//         $unwind: {
+//             path: '$posts',
+//             preserveNullAndEmptyArrays: true,
+//         },
+//     },
+//     {
+//         $unwind: {
+//             path: '$usuario',
+//             //preserveNullAndEmptyArrays: true,
+//         },
+//     },
+//     {
+//         $group: {
+//             _id: '$_id',
+//             descricao: { $first: '$descricao' },
+//             dataHora: { $first: '$posts.dataHora' },
+//             usuario: { $first: '$usuario' },
+//         },
+//     },
+//     {
+//         $sort: { dataHora: -1 },
+//     },
+// ]).then(res => {
+//     console.log(res);
 // });
 
 const GraphQLJSON = require('graphql-type-json');
@@ -127,18 +163,24 @@ const resolvers = {
         },
         getBlogsHome(obj, args, context, info) {
             return Blog.aggregate([
-                // {
-                //     $lookup: {
-                //         from: 'users',
-                //         localField: 'idUser',
-                //         foreignField: '_id',
-                //         as: 'usuario',
-                //     },
-                // },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'idUser',
+                        foreignField: '_id',
+                        as: 'usuario',
+                    },
+                },
                 {
                     $unwind: {
                         path: '$posts',
                         preserveNullAndEmptyArrays: true,
+                    },
+                },
+                {
+                    $unwind: {
+                        path: '$usuario',
+                        //preserveNullAndEmptyArrays: true,
                     },
                 },
                 {
